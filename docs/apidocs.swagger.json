@@ -1,0 +1,132 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "title": "proto/iq/v1/service.proto",
+    "version": "version not set"
+  },
+  "tags": [
+    {
+      "name": "ImageQualityService"
+    }
+  ],
+  "consumes": [
+    "application/json"
+  ],
+  "produces": [
+    "application/json"
+  ],
+  "paths": {
+    "/api/v1/analyze": {
+      "post": {
+        "summary": "Analyze image, get information about blur, glare and hand coverage",
+        "operationId": "ImageQualityService_AnalyzeImage",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1AnalyzeImageResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/v1AnalyzeImageRequest"
+            }
+          }
+        ],
+        "tags": [
+          "ImageQualityService"
+        ]
+      }
+    }
+  },
+  "definitions": {
+    "googlerpcStatus": {
+      "type": "object",
+      "properties": {
+        "code": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "message": {
+          "type": "string"
+        },
+        "details": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/protobufAny"
+          }
+        }
+      }
+    },
+    "protobufAny": {
+      "type": "object",
+      "properties": {
+        "@type": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": {}
+    },
+    "v1AnalyzeImageRequest": {
+      "type": "object",
+      "properties": {
+        "imageJpeg": {
+          "type": "string",
+          "format": "byte",
+          "title": "Jpeg image bytes, if using HTTP and JSON, the image is base64 encoded string"
+        }
+      },
+      "title": "Input to the AnalyzeImage RPC"
+    },
+    "v1AnalyzeImageResponse": {
+      "type": "object",
+      "properties": {
+        "status": {
+          "title": "Response status, indicates if the document was found and analyzed",
+          "allOf": [
+            {
+              "$ref": "#/definitions/v1AnalyzeImageResponseStatus"
+            }
+          ]
+        },
+        "blurConfidenceLevel": {
+          "type": "integer",
+          "format": "int32",
+          "description": "Predicted confidence score that the document is blurred. This is an integer value between 0 and 7.\nConfidence levels range from 0 (model is very certain that the document is not blurred) to 7 (model is very certain that the document is blurred).\nUsing a higher confidence level to classify blur yields higher precision, but lower recall. Depending on your\nuse case, you may want to be more or less \"strict\" when classifying the document image as blurred.\nE.g. using level 1 to detect blur will yield higher recall, but lower precision (less \"strict\", images with the slightest blur will be classified as BLURRED),\nwhile using level 7 to detect blur will yield higher precision, but lower recall (more \"strict\", only images with strong blur will be classified as BLURRED)."
+        },
+        "glareConfidenceLevel": {
+          "type": "integer",
+          "format": "int32",
+          "description": "Predicted confidence score that the document has glare. This is an integer value between 0 and 7.\nConfidence levels range from 0 (model is very certain that the document has no glare) to 7 (model is very certain that the document has glare).\nUsing a higher confidence level to classify glare yields higher precision, but lower recall.\nE.g. using level 1 to detect glare will yield higher recall, but lower precision (less \"strict\", images with the slightest glare will be classified as GLARE),\nwhile using level 7 to detect glare will yield higher precision, but lower recall (more \"strict\", only images with strong glare will be classified as GLARE)."
+        },
+        "handCoveragePercent": {
+          "type": "integer",
+          "format": "int32",
+          "description": "Percentage of the document that is covered by the hand. Value between 0 and 100.\nE.g. 50 means that half of the document is covered by the hand.\nE.g. 0 means that that the hand is not covering any part of the document."
+        }
+      }
+    },
+    "v1AnalyzeImageResponseStatus": {
+      "type": "string",
+      "enum": [
+        "STATUS_OK",
+        "STATUS_DOCUMENT_NOT_PRESENT"
+      ],
+      "default": "STATUS_OK",
+      "description": "- STATUS_OK: Document found and analyzed\n - STATUS_DOCUMENT_NOT_PRESENT: Document not found",
+      "title": "Status"
+    }
+  }
+}
