@@ -40,7 +40,8 @@ docker compose logs extraction -f
 
 Once you see
 ```text
-
+{"level":"info","time":"2025-02-24T12:58:19Z","message":"Serving grpc on port 8005"}
+{"level":"info","time":"2025-02-24T12:58:19Z","message":"Serving gateway on port 8000"}
 ```
 
 the service is ready to accept and process requests.
