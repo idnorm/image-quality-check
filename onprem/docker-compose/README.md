@@ -35,7 +35,7 @@ Once started, the solution endpoint will be available for your application integ
 You can inspect the logs using
 
 ```bash
-docker compose logs extraction -f
+docker compose logs iq -f
 ```
 
 Once you see

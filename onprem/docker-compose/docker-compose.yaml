@@ -1,7 +1,6 @@
 services:
   model-dl:
     image: google/cloud-sdk:slim
-    container_name: model-dl-iq
     volumes:
       - models-prot:/models
     entrypoint: /bin/bash
@@ -28,7 +27,6 @@ services:
     depends_on:
       model-dl:
         condition: service_completed_successfully
-    container_name: serving-iq
     environment:
       VD_DEC: "1"
     command:
@@ -51,7 +49,6 @@ services:
 
   iq:
     image: us-central1-docker.pkg.dev/idnorm/idnorm-pub/iq:v${IQ_VERSION}
-    container_name: iq
     depends_on:
       - serving
     command: ["--serving-url", "serving:8500"]
