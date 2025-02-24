@@ -24,7 +24,7 @@ services:
       echo 'All model folders already exist, skipping copy.'; \
       fi"
   serving:
-    image: us-central1-docker.pkg.dev/idnorm/idnorm/tfserving:${SERVING_TAG}
+    image: us-central1-docker.pkg.dev/idnorm/idnorm-pub/serving:${SERVING_TAG}
     depends_on:
       model-dl:
         condition: service_completed_successfully
