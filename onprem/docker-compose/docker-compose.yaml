@@ -1,0 +1,63 @@
+services:
+  model-dl:
+    image: google/cloud-sdk:slim
+    container_name: model-dl-iq
+    volumes:
+      - models-prot:/models
+    entrypoint: /bin/bash
+    command: -c "
+      if [ ! -d /models/54aae1ca6f0d5eae ] && \
+      [ ! -d /models/6f697701fc10ce13 ] && \
+      [ ! -d /models/f4e44a731f7df858 ] && \
+      [ ! -d /models/e4e037194ec6f091 ] && \
+      [ ! -d /models/a062e0a2781b3d55 ] && \
+      [ ! -d /models/3c27c64bd11d5643 ]; then \
+      gsutil -m cp -r \
+      gs://idnorm-models-enc/54aae1ca6f0d5eae \
+      gs://idnorm-models-enc/6f697701fc10ce13 \
+      gs://idnorm-models-enc/f4e44a731f7df858 \
+      gs://idnorm-models-enc/3c27c64bd11d5643 \
+      gs://idnorm-models-enc/e4e037194ec6f091 \
+      gs://idnorm-models-enc/a062e0a2781b3d55 \
+      /models; \
+      else \
+      echo 'All model folders already exist, skipping copy.'; \
+      fi"
+  serving:
+    image: us-central1-docker.pkg.dev/idnorm/idnorm/tfserving:${SERVING_TAG}
+    depends_on:
+      model-dl:
+        condition: service_completed_successfully
+    container_name: serving-iq
+    environment:
+      VD_DEC: "1"
+    command:
+      - "--model_config_file=/config/model-config"
+      # setting this to expected number of max concurrent requests
+      - "--tensorflow_inter_op_parallelism=20"
+      # number of CPUs seems to be a good value
+      - "--tensorflow_intra_op_parallelism=6"
+      # setting this to expected number of max concurrent requests x 2 to
+      # adjust for "waiting" for resources to become available
+      - "--grpc_max_threads=40"
+    volumes:
+      - models-prot:/models # Use named volume 'models' instead of host mount
+      - ./models.config:/config/model-config:ro
+    deploy:
+      resources:
+        limits:
+          memory: 3G
+          cpus: 6.0
+
+  iq:
+    image: us-central1-docker.pkg.dev/idnorm/idnorm-pub/iq:v${IQ_VERSION}
+    container_name: iq
+    depends_on:
+      - serving
+    command: ["--serving-url", "serving:8500"]
+    ports:
+      - "${IQ_GRPC_PORT}:8005" # grpc
+      - "${IQ_HTTP_PORT}:8000" # http
+
+volumes:
+  models-prot:
