@@ -45,3 +45,9 @@ Once you see
 ```
 
 the service is ready to accept and process requests.
+
+To test the service you can use helper script in the root of the repo `send-rest-request.sh`.
+
+```bash
+./send-rest-request.sh <path_to_image>
+```
