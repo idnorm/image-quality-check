@@ -2,6 +2,7 @@
 
 # Set default endpoint if ENDPOINT is not provided
 ENDPOINT=${ENDPOINT:-"http://0.0.0.0:8000"}
+IDNORM_LICENSE_KEY=${IDNORM_LICENSE_KEY:-""}
 
 if [ $# -ne 1 ]; then
   echo "Usage: $0 <image-path>"
@@ -26,9 +27,16 @@ TMP_FILE=$(mktemp)
 } > "$TMP_FILE"
 
 # Send the request using curl
-curl -X POST "$ENDPOINT/api/v1/analyze" \
-     -H "Content-Type: application/json" \
-     --data-binary @"$TMP_FILE"
+if [ -n "$IDNORM_LICENSE_KEY" ]; then
+  curl -X POST "$ENDPOINT/api/v1/analyze" \
+       -H "Content-Type: application/json" \
+       -H "idnorm-license-key: $IDNORM_LICENSE_KEY" \
+       --data-binary @"$TMP_FILE"
+else
+  curl -X POST "$ENDPOINT/api/v1/analyze" \
+       -H "Content-Type: application/json" \
+       --data-binary @"$TMP_FILE"
+fi
 
 # Clean up temporary file
 rm -f "$TMP_FILE"

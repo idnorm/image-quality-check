@@ -28,6 +28,19 @@ API documentation is maintained and shipped using Swagger.
 
 In the documentation you can find all the details about available paths, expected request and response payloads, and different request configuration options.
 
+### Example
+
+Here we provide a simple bash script you can use to test out and send "one off" requests. To the
+image quality check API REST endpoint.
+
+If you want to use the Cloud SaaS endpoint, you need to provide your license key as an environment variable:
+
+```bash
+export IDNORM_LICENSE_KEY=<your license key here>
+export ENDPOINT=https://iq.idnorm.com
+./send-rest-request.sh
+```
+
 ## gRPC
 
 Focusing on performance, readability, and ease of code integration we recommend using gRPC whilst integrating our
