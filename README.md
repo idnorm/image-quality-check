@@ -18,6 +18,13 @@ Our extraction service can be hosted on your infrastructure. We provide two main
 Both Cloud SaaS and On-premise solutions use the same APIs. For integration
 we offer gRPC and REST APIs you can use to communicate with the service.
 
+## Input data
+Image quality check API accepts an image in jpg format. Image size should not exceed 3MB.
+Ideally, the larger image dimension should not exceed 1920 pixels - this is a full HD resolution of a portrait image.
+Sending larger images **will not help** improve the quality check accuracy, but will increase network traffic and processing time. Therefore,
+it is encouraged to downsize larger images to 1920 pixels of larger dimensions while preserving the aspect ratio, before sending it to image
+quality check service.
+
 ## REST
 
 REST is, arguably, still the most popular choice for building backend services APIs. Therefore, our ID extraction service comes with REST as well as gRPC API.
@@ -33,12 +40,12 @@ In the documentation you can find all the details about available paths, expecte
 Here we provide a simple bash script you can use to test out and send "one off" requests. To the
 image quality check API REST endpoint.
 
-If you want to use the Cloud SaaS endpoint, you need to provide your license key as an environment variable:
+If you want to use the Cloud SaaS endpoint, you need to provide your license key as an environment variable
 
 ```bash
 export IDNORM_LICENSE_KEY=<your license key here>
 export ENDPOINT=https://iq.idnorm.com
-./send-rest-request.sh
+./send-rest-request.sh <path to image>
 ```
 
 ## gRPC
